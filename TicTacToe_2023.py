@@ -1,94 +1,59 @@
-import os
-import time
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 5)
 
-board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-player = 1
+def check_winner(board, player):
+    # Check rows and columns
+    for i in range(3):
+        if all(board[i][j] == player for j in range(3)) or all(board[j][i] == player for j in range(3)):
+            return True
 
-# Win Flags
-Win = 1
-Draw = -1
-Running = 0
-Stop = 1
-
-Game = Running
-Mark = 'X'
-
-
-def DrawBoard()
-    print(" %c | %c | %c " % (board[1], board[2], board[3]))
-    print("___|___|___")
-    print(" %c | %c | %c " % (board[4], board[5], board[6]))
-    print("___|___|___")
-    print(" %c | %c | %c " % (board[7], board[8], board[9]))
-    print(" | | ")
-
-
-def CheckPosition(x):
-    if board[x] == ' ':
+    # Check diagonals
+    if all(board[i][i] == player for i in range(3)) or all(board[i][2 - i] == player for i in range(3)):
         return True
-    else:
-        return False
 
+    return False
 
-def CheckWin():
-    global Game
+def is_board_full(board):
+    return all(board[i][j] != ' ' for i in range(3) for j in range(3))
 
-    if board[1] == board[2] and board[2] == board[3] and board[1] != ' ':
-        Game = Win
-    elif board[4] == board[5] and board[5] == board[6] and board[4] != ' ':
-        Game = Win
-    elif board[7] == board[8] and board[8] == board[9] and board[7] != ' ':
-        Game = Win
-    elif board[1] == board[4] and board[4] == board[7] and board[1] != ' ':
-        Game = Win
-    elif board[2] == board[5] and board[5] == board[8] and board[2] != ' ':
-        Game = Win
-    elif board[3] == board[6] and board[6] == board[9] and board[3] != ' ':
-        Game = Win
-    elif board[1] == board[5] and board[5] == board[9] and board[5] != ' ':
-        Game = Win
-    elif board[3] == board[5] and board[5] == board[7] and board[5] != ' ':
-        Game = Win
-    elif board[1] != ' ' and board[2] != ' ' and board[3] != ' ' and \
-            board[4] != ' ' and board[5] != ' ' and board[6] != ' ' and \
-            board[7] != ' ' and board[8] != ' ' and board[9] != ' ':
-        Game = Draw
-    else:
-        Game = Running
+def play_tic_tac_toe():
+    board = [[' ' for _ in range(3)] for _ in range(3)]
+    current_player = 'X'
 
+    while True:
+        print_board(board)
 
-print("Tic-Tac-Toe Game Designed By Sourabh Somani")
-print("Player 1 [X] --- Player 2 [O]\n")
-print()
-print()
-print("Please Wait...")
-time.sleep(3)
+        # Get player move
+        while True:
+            try:
+                row = int(input("Enter row (0, 1, or 2): "))
+                col = int(input("Enter column (0, 1, or 2): "))
+                if 0 <= row < 3 and 0 <= col < 3 and board[row][col] == ' ':
+                    break
+                else:
+                    print("Invalid move. Try again.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
 
-while Game == Running:
-    os.system('cls')
-    DrawBoard()
+        # Make the move
+        board[row][col] = current_player
 
-    if player % 2 != 0:
-        print("Player 1's chance")
-        Mark = 'X'
-    else:
-        print("Player 2's chance")
-        Mark = 'O'
+        # Check for a winner
+        if check_winner(board, current_player):
+            print_board(board)
+            print(f"Player {current_player} wins!")
+            break
 
-    choice = int(input("Enter the position between [1-9] where you want to mark: "))
-    if CheckPosition(choice):
-        board[choice] = Mark
-        player += 1
-        CheckWin()
+        # Check for a tie
+        if is_board_full(board):
+            print_board(board)
+            print("It's a tie!")
+            break
 
-    os.system('cls')
-    DrawBoard()
+        # Switch to the other player
+        current_player = 'O' if current_player == 'X' else 'X'
 
-    if Game == Draw:
-        print("Game Draw")
-    elif Game == Win:
-        player -= 1
-        if player % 2 != 0:
-            print("Player 1 Won")
-        else:
-            print("Player 2 Won")
+if __name__ == "__main__":
+    play_tic_tac_toe()
